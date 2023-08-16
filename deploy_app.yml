@@ -1,5 +1,0 @@
-- name: Deploy Spring Metrics App
-  hosts: server_a
-  tasks:
-    - name: Start Docker Compose
-      command: docker-compose -f <<path to docker-compose.yml file>> up -d
