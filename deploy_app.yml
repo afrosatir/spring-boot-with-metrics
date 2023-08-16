@@ -1,0 +1,12 @@
+- name: Deploy Spring Metrics App
+  hosts: server_a
+  become: true
+  tasks:
+    - name: Start Docker Compose
+      command: docker-compose -f /home/serever-a/spring-boot-with-metrics/docker-compose.yml up -d
+
+    - name: Start Node Exporter service
+      systemd:
+        name: node_exporter
+        state: started
+
