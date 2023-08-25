@@ -2,11 +2,51 @@
   hosts: server_a
   become: true
   tasks:
-    - name: Start Docker Compose
-      command: docker-compose -f /home/serever-a/spring-boot-with-metrics/docker-compose.yml up -d
+    - name: Clone Java App Repository
+      git:
+        repo: https://github.com/tutorialworks/spring-boot-with-metrics.git
+        dest: /home/serever-a/sping-boot-with-metrics
 
-    - name: Start Node Exporter service
+    - name: Build Java App
+      command: mvn clean package
+      args:
+        chdir: /home/serever-a/spring-boot-with-metrics
+
+    - name: Copy Docker Compose file
+      copy:
+        src: /home/serever-a/spring-boot-with-metrics/docker-compose.yml
+        dest: /home/serever-a/spring-boot-with-metrics
+
+    - name: Copy Dockerfile
+      copy:
+        src: /home/serever-a/spring-boot-with-metrics/Dockerfile
+        dest: /home/serever-a/spring-boot-with-metrics/Dockerfile
+
+    - name: Run docker-compose build
+      command: docker-compose build
+      args:
+        chdir: /home/serever-a/spring-boot-with-metrics
+
+    - name: Start Docker Compose services
+      command: docker-compose up -d
+      args:
+        chdir: /home/serever-a/spring-boot-with-metrics
+
+    - name: Download Node Exporter
+      get_url:
+        url: https://github.com/prometheus/node_exporter/releases/download/v1.2.2/node_exporter-1.2.2.linux-amd64.tar.gz
+        dest: /home/serever-a/
+        mode: '0755'
+
+    - name: Extract Node Exporter
+      ansible.builtin.unarchive:
+        src: /home/serever-a/node_exporter-1.2.2.linux-amd64.tar.gz
+        dest: /home/serever-a/
+        remote_src: yes
+
+    - name: Start Node Exporter
       systemd:
         name: node_exporter
+        enabled: yes
         state: started
-
+      
