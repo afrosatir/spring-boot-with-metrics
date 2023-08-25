@@ -5,7 +5,7 @@
     - name: Clone Java App Repository
       git:
         repo: https://github.com/tutorialworks/spring-boot-with-metrics.git
-        dest: /home/serever-a/sping-boot-with-metrics
+        dest: /home/serever-a/spring-boot-with-metrics
 
     - name: Build Java App
       command: mvn clean package
